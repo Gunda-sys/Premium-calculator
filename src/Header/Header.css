@@ -1,0 +1,9 @@
+.header-premium {
+    background-color: rgb(150, 146, 146);
+    height : 50px
+}
+
+.header-text{
+    text-align: center;
+    padding: 10px;
+}

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./UserForm.css";
 
 const RATINGS = {
-  "Professional": 1.5,
+  Professional: 1.5,
   "White Collar": 2.25,
   "Light Manual": 11.5,
-  "Heavy Manual": 31.75
+  "Heavy Manual": 31.75,
 };
 
 const OCCUPATIONS = [
@@ -16,7 +16,7 @@ const OCCUPATIONS = [
   { label: "Farmer", rating: "Heavy Manual" },
   { label: "Mechanic", rating: "Heavy Manual" },
   { label: "Florist", rating: "Light Manual" },
-  { label: "Other", rating: "Heavy Manual" }
+  { label: "Other", rating: "Heavy Manual" },
 ];
 
 const calculatePremium = (amount, factor, age) => {
@@ -25,67 +25,82 @@ const calculatePremium = (amount, factor, age) => {
 };
 
 export default function UserForm() {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       name: "",
       age: "",
       dob: "",
       occupation: "",
-      deathSumInsured: ""
-    }
+      deathSumInsured: "",
+    },
   });
 
   const [premium, setPremium] = useState(0);
 
-  const values = watch(["age", "occupation", "deathSumInsured"]);
-
-  // 🔹 Only calculate premium when the form is valid (after submit)
   const onSubmit = (data) => {
-    const selectedOcc = OCCUPATIONS.find(o => o.label === data.occupation);
+    const selectedOcc = OCCUPATIONS.find((o) => o.label === data.occupation);
     if (selectedOcc) {
       const factor = RATINGS[selectedOcc.rating];
-      const result = calculatePremium(Number(data.deathSumInsured), factor, Number(data.age));
+      const result = calculatePremium(
+        Number(data.deathSumInsured),
+        factor,
+        Number(data.age)
+      );
       setPremium(result.toFixed(2));
+    } else {
+      setPremium(0);
     }
   };
 
   return (
     <div className="user-form">
       <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Name */}
         <div style={{ marginBottom: "1rem" }}>
-          <label>Name:</label><br />
+          <label htmlFor="name">Name:</label><br />
           <input
+            id="name"
             {...register("name", { required: "Name is required" })}
             placeholder="Enter full name"
           />
           {errors.name && <p className="error">{errors.name.message}</p>}
         </div>
 
+        {/* Age */}
         <div style={{ marginBottom: "1rem" }}>
-          <label>Age Next Birthday:</label><br />
+          <label htmlFor="age">Age Next Birthday:</label><br />
           <input
+            id="age"
             type="number"
             {...register("age", {
               required: "Age is required",
-              min: { value: 1, message: "Age must be greater than 0" }
+              min: { value: 1, message: "Age must be greater than 0" },
             })}
             placeholder="Enter age"
           />
           {errors.age && <p className="error">{errors.age.message}</p>}
         </div>
 
+        {/* DOB */}
         <div style={{ marginBottom: "1rem" }}>
-          <label>Date of Birth (MM/YYYY):</label><br />
+          <label htmlFor="dob">Date of Birth (MM/YYYY):</label><br />
           <input
+            id="dob"
             type="month"
             {...register("dob", { required: "Date of birth is required" })}
           />
           {errors.dob && <p className="error">{errors.dob.message}</p>}
         </div>
 
+        {/* Occupation */}
         <div style={{ marginBottom: "1rem" }}>
-          <label>Usual Occupation:</label><br />
+          <label htmlFor="occupation">Usual Occupation:</label><br />
           <select
+            id="occupation"
             {...register("occupation", { required: "Occupation is required" })}
           >
             <option value="">-- Select Occupation --</option>
@@ -95,16 +110,20 @@ export default function UserForm() {
               </option>
             ))}
           </select>
-          {errors.occupation && <p className="error">{errors.occupation.message}</p>}
+          {errors.occupation && (
+            <p className="error">{errors.occupation.message}</p>
+          )}
         </div>
 
+        {/* Sum Insured */}
         <div style={{ marginBottom: "1rem" }}>
-          <label>Death – Sum Insured:</label><br />
+          <label htmlFor="deathSumInsured">Death – Sum Insured:</label><br />
           <input
+            id="deathSumInsured"
             type="number"
             {...register("deathSumInsured", {
               required: "Sum insured is required",
-              min: { value: 1, message: "Must be greater than 0" }
+              min: { value: 1, message: "Must be greater than 0" },
             })}
             placeholder="Enter amount"
           />
@@ -118,12 +137,14 @@ export default function UserForm() {
         <button type="submit">Calculate Premium</button>
 
         <h3>Calculated Monthly Premium:</h3>
-        <div style={{
-          backgroundColor: "#f2f2f2",
-          padding: "10px",
-          borderRadius: "4px",
-          fontSize: "1.2rem"
-        }}>
+        <div
+          style={{
+            backgroundColor: "#f2f2f2",
+            padding: "10px",
+            borderRadius: "4px",
+            fontSize: "1.2rem",
+          }}
+        >
           ${premium}
         </div>
       </form>
